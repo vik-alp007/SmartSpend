@@ -1,0 +1,33 @@
+{
+  "name": "smartspend",
+  "version": "1.0.0",
+  "description": "SmartSpend - Personal Finance & Expense Tracker (Bug Hunting Edition)",
+  "main": "server/src/server.js",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['--prefix', 'server', 'run', 'dev'], { stdio: 'inherit', shell: true }); spawn('npm', ['--prefix', 'client', 'run', 'dev'], { stdio: 'inherit', shell: true });\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "test": "npm --prefix server test",
+    "test:competition": "npm --prefix server run test:competition",
+    "test:fixed": "npm --prefix server run test:fixed",
+    "seed": "node scripts/seed-demo-data.js",
+    "pdf": "node scripts/generate-bug-pdf.js"
+  },
+  "keywords": [
+    "personal-finance",
+    "expense-tracker",
+    "mern",
+    "express",
+    "mongodb",
+    "react",
+    "framer-motion"
+  ],
+  "author": "SmartSpend Team",
+  "license": "ISC",
+  "devDependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}
