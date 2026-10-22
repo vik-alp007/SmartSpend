@@ -21,11 +21,14 @@ const app = express();
 // Trust proxy if deployed behind reverse proxy
 app.set('trust proxy', 1);
 
-// CORS configuration
+// CORS configuration — allow localhost dev origins, Vercel deployments, and CLIENT_ORIGIN
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (e.g. mobile apps, curl, or same-origin in production)
+    // Allow requests with no origin (same-origin, mobile apps, curl)
     if (!origin) return callback(null, true);
+
+    // Always allow in development
+    if (config.nodeEnv === 'development') return callback(null, true);
 
     const allowedOrigins = [
       config.clientOrigin,
@@ -34,9 +37,12 @@ const corsOptions = {
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:5000'
-    ];
+    ].filter(Boolean);
 
-    if (allowedOrigins.includes(origin) || config.nodeEnv === 'development') {
+    // Allow any *.vercel.app subdomain (covers all preview + production deployments)
+    const isVercelApp = /^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
+
+    if (allowedOrigins.includes(origin) || isVercelApp) {
       callback(null, true);
     } else {
       callback(new Error('CORS policy: Not allowed by Access-Control-Allow-Origin'));
@@ -46,6 +52,9 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
+
+// Handle CORS preflight OPTIONS requests immediately — must be before rate limiter & routes
+app.options('*', cors(corsOptions));
 
 app.use(cors(corsOptions));
 app.use(cookieParser(config.cookieSecret));
