@@ -19,8 +19,8 @@ function validateEnv() {
 
   if (missing.length > 0) {
     console.error(`\x1b[31m[CONFIG ERROR] Missing required environment variable(s): ${missing.join(', ')}\x1b[0m`);
-    console.error('Please create a server/.env file based on .env.example before starting.');
-    if (process.env.NODE_ENV !== 'test') {
+    console.error('Please configure them in your environment settings (or Vercel Environment Variables).');
+    if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
       process.exit(1);
     }
   }

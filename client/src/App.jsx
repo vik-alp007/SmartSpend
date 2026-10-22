@@ -24,19 +24,19 @@ import { transactionsApi } from './services/api';
 
 export default function App() {
   const { user, loading, triggerDashboardRefresh } = useAuth();
-  const [currentPage, setCurrentPage] = useState('landing');
+  const getNormalizedPath = () => window.location.pathname.replace(/^\/+|\/+$/g, '') || 'landing';
+  const [currentPage, setCurrentPage] = useState(getNormalizedPath);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGlobalAddOpen, setIsGlobalAddOpen] = useState(false);
 
   // Sync route with URL path
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname.replace(/^\//, '') || 'landing';
-      setCurrentPage(path);
+      setCurrentPage(getNormalizedPath());
     };
 
-    const initialPath = window.location.pathname.replace(/^\//, '');
-    if (initialPath) {
+    const initialPath = getNormalizedPath();
+    if (initialPath && initialPath !== 'landing') {
       setCurrentPage(initialPath);
     } else if (user) {
       setCurrentPage('dashboard');

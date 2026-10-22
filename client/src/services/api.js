@@ -1,7 +1,14 @@
-const API_BASE = '/api';
+
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL || '/api'
+).replace(/\/+$/, '');
 
 export async function request(endpoint, options = {}) {
-  const url = `${API_BASE}${endpoint}`;
+  const normalizedEndpoint = endpoint.startsWith('/')
+    ? endpoint
+    : `/${endpoint}`;
+
+  const url = `${API_BASE}${normalizedEndpoint}`;
   const token = localStorage.getItem('smartspend_token');
 
   const headers = {
@@ -13,19 +20,27 @@ export async function request(endpoint, options = {}) {
   const config = {
     ...options,
     headers,
-    credentials: 'include' // Send cookies
+    credentials: 'include'
   };
 
-  if (options.body && typeof options.body === 'object') {
+  if (
+    options.body &&
+    typeof options.body === 'object' &&
+    !(options.body instanceof FormData)
+  ) {
     config.body = JSON.stringify(options.body);
   }
 
   try {
     const response = await fetch(url, config);
+
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const error = new Error(data.message || `Request failed with status ${response.status}`);
+      const error = new Error(
+        data.message || `Request failed with status ${response.status}`
+      );
+
       error.status = response.status;
       error.data = data;
       throw error;
@@ -34,17 +49,33 @@ export async function request(endpoint, options = {}) {
     return data;
   } catch (error) {
     if (!error.status && error.name === 'TypeError') {
-      error.message = 'Unable to connect to SmartSpend server. Please ensure the backend is running.';
+      error.message =
+        'Unable to connect to SmartSpend server. Please check your internet connection and backend deployment.';
     }
+
     throw error;
   }
 }
 
 // Auth API
 export const authApi = {
-  login: (credentials) => request('/auth/login', { method: 'POST', body: credentials }),
-  register: (userData) => request('/auth/register', { method: 'POST', body: userData }),
-  logout: () => request('/auth/logout', { method: 'POST' }),
+  login: (credentials) =>
+    request('/auth/login', {
+      method: 'POST',
+      body: credentials
+    }),
+
+  register: (userData) =>
+    request('/auth/register', {
+      method: 'POST',
+      body: userData
+    }),
+
+  logout: () =>
+    request('/auth/logout', {
+      method: 'POST'
+    }),
+
   getMe: () => request('/auth/me')
 };
 
@@ -54,10 +85,25 @@ export const transactionsApi = {
     const query = new URLSearchParams(params).toString();
     return request(`/transactions${query ? `?${query}` : ''}`);
   },
+
   getById: (id) => request(`/transactions/${id}`),
-  create: (data) => request('/transactions', { method: 'POST', body: data }),
-  update: (id, data) => request(`/transactions/${id}`, { method: 'PATCH', body: data }),
-  delete: (id) => request(`/transactions/${id}`, { method: 'DELETE' })
+
+  create: (data) =>
+    request('/transactions', {
+      method: 'POST',
+      body: data
+    }),
+
+  update: (id, data) =>
+    request(`/transactions/${id}`, {
+      method: 'PATCH',
+      body: data
+    }),
+
+  delete: (id) =>
+    request(`/transactions/${id}`, {
+      method: 'DELETE'
+    })
 };
 
 // Budgets API
@@ -66,14 +112,29 @@ export const budgetsApi = {
     const query = new URLSearchParams(params).toString();
     return request(`/budgets${query ? `?${query}` : ''}`);
   },
-  create: (data) => request('/budgets', { method: 'POST', body: data }),
-  update: (id, data) => request(`/budgets/${id}`, { method: 'PATCH', body: data }),
-  delete: (id) => request(`/budgets/${id}`, { method: 'DELETE' })
+
+  create: (data) =>
+    request('/budgets', {
+      method: 'POST',
+      body: data
+    }),
+
+  update: (id, data) =>
+    request(`/budgets/${id}`, {
+      method: 'PATCH',
+      body: data
+    }),
+
+  delete: (id) =>
+    request(`/budgets/${id}`, {
+      method: 'DELETE'
+    })
 };
 
 // Dashboard API
 export const dashboardApi = {
   getSummary: () => request('/dashboard/summary'),
+
   getCharts: () => request('/dashboard/charts')
 };
 
@@ -83,6 +144,7 @@ export const reportsApi = {
     const query = new URLSearchParams(params).toString();
     return request(`/reports/monthly${query ? `?${query}` : ''}`);
   },
+
   getCategories: (params = {}) => {
     const query = new URLSearchParams(params).toString();
     return request(`/reports/categories${query ? `?${query}` : ''}`);
@@ -92,8 +154,18 @@ export const reportsApi = {
 // Profile API
 export const profileApi = {
   get: () => request('/profile'),
-  update: (data) => request('/profile', { method: 'PATCH', body: data }),
-  changePassword: (data) => request('/profile/change-password', { method: 'POST', body: data })
+
+  update: (data) =>
+    request('/profile', {
+      method: 'PATCH',
+      body: data
+    }),
+
+  changePassword: (data) =>
+    request('/profile/change-password', {
+      method: 'POST',
+      body: data
+    })
 };
 
 // Config API
