@@ -192,7 +192,7 @@ export default function TransactionForm({
             </div>
 
             {/* Category & Payment Method */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-row-2">
               <div className="form-group">
                 <label className="form-label" htmlFor="tx-category">Category</label>
                 <select

@@ -87,9 +87,9 @@ export default function DashboardPage({ onNavigate }) {
       {error && <ErrorMessage message={error} onDismiss={() => setError('')} retryAction={fetchDashboardData} />}
 
       {/* Top Banner / Welcome */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header-row">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', fontWeight: 700, color: '#0f172a' }}>
             Welcome back, {user?.name || 'Explorer'}!
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>

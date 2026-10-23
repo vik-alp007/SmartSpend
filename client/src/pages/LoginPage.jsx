@@ -35,18 +35,8 @@ export default function LoginPage({ onNavigate }) {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '24px',
-        backgroundColor: '#f8fafc'
-      }}
-    >
-      <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+    <div className="auth-container">
+      <div style={{ marginBottom: '24px', textAlign: 'center' }}>
         <div
           onClick={() => onNavigate('landing')}
           style={{
@@ -66,7 +56,8 @@ export default function LoginPage({ onNavigate }) {
               alignItems: 'center',
               justifyContent: 'center',
               color: '#ffffff',
-              boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)'
+              boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)',
+              flexShrink: 0
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -82,15 +73,7 @@ export default function LoginPage({ onNavigate }) {
         </p>
       </div>
 
-      <div
-        className="content-card"
-        style={{
-          width: '100%',
-          maxWidth: '440px',
-          padding: '32px',
-          boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.08)'
-        }}
-      >
+      <div className="content-card auth-card">
         <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '20px' }}>
           Sign In
         </h2>

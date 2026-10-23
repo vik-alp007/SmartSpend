@@ -81,7 +81,7 @@ export default function ProfilePage() {
   return (
     <div className="page-content" style={{ maxWidth: '800px' }}>
       <div style={{ marginBottom: '28px' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+        <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', fontWeight: 700, color: '#0f172a' }}>
           Account Settings
         </h2>
         <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>

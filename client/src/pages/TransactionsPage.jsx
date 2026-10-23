@@ -133,9 +133,9 @@ export default function TransactionsPage() {
       {error && <ErrorMessage message={error} onDismiss={() => setError('')} retryAction={fetchTransactions} />}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header-row">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', fontWeight: 700, color: '#0f172a' }}>
             Transactions
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>
@@ -160,7 +160,7 @@ export default function TransactionsPage() {
       </div>
 
       {/* Filters and Search Bar */}
-      <div className="content-card" style={{ marginBottom: '24px', padding: '20px' }}>
+      <div className="content-card" style={{ marginBottom: '24px' }}>
         <div className="filters-bar" style={{ marginBottom: '16px' }}>
           {/* Search */}
           <div className="search-input-wrapper">
@@ -187,7 +187,6 @@ export default function TransactionsPage() {
           <select
             id="tx-type-filter"
             className="form-select"
-            style={{ width: 'auto', minWidth: '130px' }}
             value={type}
             onChange={(e) => {
               setType(e.target.value);
@@ -203,7 +202,6 @@ export default function TransactionsPage() {
           <select
             id="tx-category-filter"
             className="form-select"
-            style={{ width: 'auto', minWidth: '150px' }}
             value={category}
             onChange={(e) => {
               setCategory(e.target.value);
@@ -221,7 +219,6 @@ export default function TransactionsPage() {
           <select
             id="tx-sort-by"
             className="form-select"
-            style={{ width: 'auto', minWidth: '150px' }}
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
@@ -242,7 +239,7 @@ export default function TransactionsPage() {
         </div>
 
         {/* Date Range Sub-Bar */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.85rem' }}>
+        <div className="date-range-bar">
           <span style={{ color: '#64748b', fontWeight: 500 }}>Date Range:</span>
           <input
             id="tx-start-date"

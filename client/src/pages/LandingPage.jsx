@@ -3,23 +3,9 @@ import { motion } from 'framer-motion';
 
 export default function LandingPage({ onNavigate }) {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', color: '#0f172a' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', color: '#0f172a', overflowX: 'hidden' }}>
       {/* Landing Navigation */}
-      <header
-        style={{
-          height: '76px',
-          borderBottom: '1px solid #e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 40px',
-          position: 'sticky',
-          top: 0,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 50
-        }}
-      >
+      <header className="landing-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
@@ -31,7 +17,8 @@ export default function LandingPage({ onNavigate }) {
               alignItems: 'center',
               justifyContent: 'center',
               color: '#ffffff',
-              boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)'
+              boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)',
+              flexShrink: 0
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -39,19 +26,19 @@ export default function LandingPage({ onNavigate }) {
             </svg>
           </div>
           <div>
-            <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
+            <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
               SmartSpend
             </div>
           </div>
         </div>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '0.925rem', fontWeight: 500, color: '#475569' }}>
+        <nav className="landing-nav">
           <a href="#features" style={{ transition: 'color 0.2s' }}>Features</a>
           <a href="#how-it-works" style={{ transition: 'color 0.2s' }}>How it Works</a>
           <a href="#privacy" style={{ transition: 'color 0.2s' }}>Security</a>
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div className="landing-header-actions">
           <button
             className="btn btn-outline btn-sm"
             onClick={() => onNavigate('login')}
@@ -70,14 +57,7 @@ export default function LandingPage({ onNavigate }) {
       </header>
 
       {/* Hero Section */}
-      <section
-        style={{
-          padding: '80px 24px 60px',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          textAlign: 'center'
-        }}
-      >
+      <section className="landing-hero">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,7 +85,7 @@ export default function LandingPage({ onNavigate }) {
           <h1
             style={{
               fontFamily: 'Outfit, sans-serif',
-              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              fontSize: 'clamp(2rem, 5.5vw, 4rem)',
               fontWeight: 800,
               lineHeight: 1.15,
               letterSpacing: '-0.03em',
@@ -119,7 +99,7 @@ export default function LandingPage({ onNavigate }) {
 
           <p
             style={{
-              fontSize: '1.2rem',
+              fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
               color: '#64748b',
               maxWidth: '680px',
               margin: '0 auto 36px',
@@ -129,7 +109,7 @@ export default function LandingPage({ onNavigate }) {
             SmartSpend gives you complete visibility over every rupee. Manage income, track expenses, set monthly category budgets, and analyze spending patterns with ease.
           </p>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '50px' }}>
+          <div className="landing-hero-actions">
             <button
               className="btn btn-primary btn-lg"
               onClick={() => onNavigate('register')}
@@ -156,18 +136,9 @@ export default function LandingPage({ onNavigate }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          style={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '20px',
-            padding: '24px',
-            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.12)',
-            maxWidth: '1050px',
-            margin: '0 auto',
-            textAlign: 'left'
-          }}
+          className="landing-preview"
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
@@ -179,7 +150,7 @@ export default function LandingPage({ onNavigate }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+          <div className="landing-preview-grid">
             <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Total Balance</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a', marginTop: '4px' }}>₹1,85,420.00</div>
@@ -199,11 +170,11 @@ export default function LandingPage({ onNavigate }) {
           </div>
 
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.85rem', color: '#64748b' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
               <span>Recent: Grocery Shopping (Blinkit)</span>
               <span style={{ color: '#dc2626', fontWeight: 600 }}>-₹1,450.00</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
               <span>Recent: Consulting Retainer</span>
               <span style={{ color: '#059669', fontWeight: 600 }}>+₹25,000.00</span>
             </div>
@@ -212,10 +183,10 @@ export default function LandingPage({ onNavigate }) {
       </section>
 
       {/* Feature Grid */}
-      <section id="features" style={{ padding: '80px 24px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      <section id="features" style={{ padding: '70px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.2rem', fontWeight: 700, marginBottom: '12px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, marginBottom: '12px' }}>
               Everything you need to master your money
             </h2>
             <p style={{ color: '#64748b', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto' }}>
@@ -223,7 +194,7 @@ export default function LandingPage({ onNavigate }) {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px' }}>
+          <div className="landing-features-grid">
             <div className="content-card">
               <div className="stat-icon emerald" style={{ marginBottom: '18px' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -268,11 +239,11 @@ export default function LandingPage({ onNavigate }) {
       </section>
 
       {/* Security & Privacy section */}
-      <section id="privacy" style={{ padding: '70px 24px', maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', fontWeight: 700, marginBottom: '14px' }}>
+      <section id="privacy" style={{ padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700, marginBottom: '14px' }}>
           Strict User Data Isolation
         </h2>
-        <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.6, maxWidth: '640px', margin: '0 auto 36px' }}>
+        <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.6, maxWidth: '640px', margin: '0 auto 32px' }}>
           Your data belongs to you. Every record is cryptographically tied to your authenticated account with password hashing, secure tokens, and isolated database queries.
         </p>
         <button className="btn btn-primary btn-md" onClick={() => onNavigate('register')}>
@@ -281,13 +252,13 @@ export default function LandingPage({ onNavigate }) {
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid #e2e8f0', padding: '36px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', fontSize: '0.85rem', color: '#64748b' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#0f172a' }}>
+      <footer className="landing-footer">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#0f172a', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span>SmartSpend</span>
           <span>•</span>
           <span style={{ fontWeight: 400, color: '#64748b' }}>Track Your Money. Master Your Spending.</span>
         </div>
-        <div>
+        <div style={{ textAlign: 'center' }}>
           © {new Date().getFullYear()} SmartSpend Inc. All rights reserved.
         </div>
       </footer>

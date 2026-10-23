@@ -48,10 +48,16 @@
   --radius-full: 9999px;
 }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -61,6 +67,10 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg {
+  max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {

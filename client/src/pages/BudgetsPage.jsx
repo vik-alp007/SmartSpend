@@ -136,9 +136,9 @@ export default function BudgetsPage() {
       {error && <ErrorMessage message={error} onDismiss={() => setError('')} />}
 
       {/* Header & Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header-row">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', fontWeight: 700, color: '#0f172a' }}>
             Category Budgets
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>
@@ -146,11 +146,10 @@ export default function BudgetsPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="page-header-actions">
           {/* Month selector */}
           <select
             className="form-select"
-            style={{ width: 'auto' }}
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
             id="budget-month-select"
@@ -165,7 +164,6 @@ export default function BudgetsPage() {
           {/* Year selector */}
           <select
             className="form-select"
-            style={{ width: 'auto' }}
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
             id="budget-year-select"
@@ -214,7 +212,7 @@ export default function BudgetsPage() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        <div className="budgets-grid">
           {budgets.map((b) => (
             <BudgetCard
               key={b.id || b._id}

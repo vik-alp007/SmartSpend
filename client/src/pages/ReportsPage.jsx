@@ -70,9 +70,9 @@ export default function ReportsPage() {
       {error && <ErrorMessage message={error} onDismiss={() => setError('')} retryAction={fetchReport} />}
 
       {/* Header and Period Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header-row">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', fontWeight: 700, color: '#0f172a' }}>
             Financial Reports & Analytics
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>
@@ -80,10 +80,9 @@ export default function ReportsPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="page-header-actions">
           <select
             className="form-select"
-            style={{ width: 'auto' }}
             value={month}
             onChange={(e) => setMonth(parseInt(e.target.value, 10))}
             id="report-month-select"
@@ -97,7 +96,6 @@ export default function ReportsPage() {
 
           <select
             className="form-select"
-            style={{ width: 'auto' }}
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
             id="report-year-select"
