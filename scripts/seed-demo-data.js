@@ -1,19 +1,16 @@
 const path = require('path');
+const dotenv = require('dotenv');
 
-// Resolve packages from server/node_modules if not in root
-function resolveModule(moduleName) {
-  try {
-    return require(moduleName);
-  } catch (e) {
-    return require(path.resolve(__dirname, '../server/node_modules', moduleName));
-  }
+// Prioritize loading env from server/.env then root .env
+dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
+if (!process.env.MONGODB_URI) {
+  dotenv.config({ path: path.resolve(__dirname, '../.env') });
 }
 
-const mongoose = resolveModule('mongoose');
-const bcrypt = resolveModule('bcryptjs');
-const dotenv = resolveModule('dotenv');
-
-dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
+// Require database config and models from server so the exact same Mongoose instance is shared
+const { connectDB, disconnectDB } = require('../server/src/config/database');
+const mongoose = require('../server/node_modules/mongoose');
+const bcrypt = require('../server/node_modules/bcryptjs');
 
 const User = require('../server/src/models/User');
 const Transaction = require('../server/src/models/Transaction');
@@ -24,22 +21,30 @@ const DEMO_EMAIL = process.env.DEMO_USER_EMAIL || 'demo@smartspend.io';
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD || 'SmartSpend2026!';
 const DEMO_NAME = 'Alex Sharma';
 
+function getMaskedUri(uri) {
+  try {
+    return uri.replace(/\/\/[^:]+:[^@]+@/, '//****:****@');
+  } catch (_) {
+    return 'mongodb://****';
+  }
+}
+
 async function seedData() {
   console.log(`\n==================================================`);
   console.log(`  SmartSpend Demo Data Seeding Utility`);
-  console.log(`  Connecting to: ${MONGODB_URI}`);
+  console.log(`  Connecting to: ${getMaskedUri(MONGODB_URI)}`);
   console.log(`==================================================\n`);
 
   try {
-    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
+    await connectDB(MONGODB_URI);
     console.log('✓ Successfully connected to MongoDB.');
 
-    // 1. Create or retrieve demo user
+    // 1. Create or retrieve demo user and ensure password matches DEMO_PASSWORD
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(DEMO_PASSWORD, salt);
+
     let user = await User.findOne({ email: DEMO_EMAIL.toLowerCase().trim() });
     if (!user) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(DEMO_PASSWORD, salt);
-
       user = await User.create({
         name: DEMO_NAME,
         email: DEMO_EMAIL.toLowerCase().trim(),
@@ -48,7 +53,10 @@ async function seedData() {
       });
       console.log(`✓ Created demo user: ${DEMO_EMAIL}`);
     } else {
-      console.log(`✓ Found existing demo user: ${DEMO_EMAIL}`);
+      user.passwordHash = passwordHash;
+      user.name = DEMO_NAME;
+      await user.save();
+      console.log(`✓ Synchronized demo user credentials: ${DEMO_EMAIL}`);
     }
 
     const userId = user._id;
