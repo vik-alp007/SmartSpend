@@ -15,11 +15,16 @@ function getApiBaseUrl() {
 const API_BASE = getApiBaseUrl();
 
 export async function request(endpoint, options = {}) {
-  const normalizedEndpoint = endpoint.startsWith('/')
+  let cleanEndpoint = endpoint.startsWith('/')
     ? endpoint
     : `/${endpoint}`;
 
-  const url = `${API_BASE}${normalizedEndpoint}`;
+  // Prevent duplicate /api if both API_BASE and endpoint include it
+  if (API_BASE.endsWith('/api') && cleanEndpoint.startsWith('/api/')) {
+    cleanEndpoint = cleanEndpoint.substring(4);
+  }
+
+  const url = `${API_BASE}${cleanEndpoint}`;
   const token = localStorage.getItem('smartspend_token');
 
   const headers = {

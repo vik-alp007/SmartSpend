@@ -78,6 +78,15 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api', healthRoutes);
 
+// Root status endpoint for backend health/verification
+app.get('/', (req, res) => {
+  res.status(200).json({
+    name: 'SmartSpend Backend API',
+    status: 'running',
+    health: '/api/health'
+  });
+});
+
 // Serve built static frontend in production if client/dist exists
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 if (fs.existsSync(clientDistPath)) {
@@ -92,11 +101,11 @@ if (fs.existsSync(clientDistPath)) {
   });
 }
 
-// Global 404 for unmatched API routes
-app.use('/api/*', (req, res) => {
+// Global 404 for unmatched routes
+app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: `API endpoint ${req.originalUrl} not found.`
+    message: `Endpoint ${req.originalUrl} not found.`
   });
 });
 

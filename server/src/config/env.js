@@ -47,7 +47,7 @@ const config = {
   mongodbUri: process.env.MONGODB_URI || (isProduction ? null : 'mongodb://localhost:27017/smartspend'),
   jwtSecret: process.env.JWT_SECRET || 'test_secret_for_automated_testing_key_12345',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  clientOrigin: process.env.FRONTEND_URL || process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   cookieSecret: process.env.COOKIE_SECRET || 'smartspend_cookie_secret_dev_32chars_min',
   // Competition Challenge Mode: default true
   bugChallengeMode: process.env.BUG_CHALLENGE_MODE !== 'false'

@@ -9,6 +9,7 @@ process.env.CLIENT_ORIGIN = 'https://smartspend-frontend.vercel.app';
 
 const app = require('../app');
 const rootServerless = require('../../../api/index');
+const serverServerless = require('../../api/index');
 
 // In-memory HTTP request simulator for sandboxed testing without TCP socket binding
 function simulateRequest(handler, method, url, headers = {}, body = null) {
@@ -241,4 +242,24 @@ test('DATABASE: connectDB throws explicit error when URI is empty', async () => 
       message: /MONGODB_URI is not configured/
     }
   );
+});
+
+test('BACKEND: GET / returns API status and health link', async () => {
+  const res = await simulateRequest(app, 'GET', '/');
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.status, 'running');
+  assert.strictEqual(res.body.health, '/api/health');
+});
+
+test('SERVERLESS: server/api/index.js exports valid async handler', () => {
+  assert.strictEqual(typeof serverServerless, 'function');
+});
+
+test('SERVERLESS: server/api/index.js handles OPTIONS request immediately without DB', async () => {
+  const res = await simulateRequest(serverServerless, 'OPTIONS', '/api/auth/login', {
+    Origin: 'https://smartspend-frontend.vercel.app'
+  });
+
+  assert.strictEqual(res.status, 204);
+  assert.strictEqual(res.headers['access-control-allow-origin'], 'https://smartspend-frontend.vercel.app');
 });
