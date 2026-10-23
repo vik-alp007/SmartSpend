@@ -4,7 +4,15 @@ const config = require('./env');
 let cachedPromise = null;
 
 async function connectDB(customUri = null) {
-  const uri = customUri || config.mongodbUri;
+  const uri = customUri !== null ? customUri : config.mongodbUri;
+
+  if (!uri || (typeof uri === 'string' && !uri.trim())) {
+    const error = new Error(
+      'MONGODB_URI is not configured. Localhost fallback is disabled in production environments. Please configure MONGODB_URI in Vercel Environment Variables with your MongoDB Atlas connection string.'
+    );
+    console.error('[DATABASE ERROR]', error.message);
+    throw error;
+  }
 
   // 1. If already connected, return existing connection
   if (mongoose.connection.readyState === 1) {

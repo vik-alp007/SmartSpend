@@ -240,3 +240,16 @@ test('FRONTEND API CONFIG: Base URL normalizer logic verification', () => {
   assert.strictEqual(getApiBaseUrl('https://my-backend.vercel.app/api'), 'https://my-backend.vercel.app/api');
   assert.strictEqual(getApiBaseUrl('https://my-backend.vercel.app/api/'), 'https://my-backend.vercel.app/api');
 });
+
+test('DATABASE: connectDB throws explicit error when URI is empty', async () => {
+  const { connectDB } = require('../config/database');
+  await assert.rejects(
+    async () => {
+      await connectDB('');
+    },
+    {
+      name: 'Error',
+      message: /MONGODB_URI is not configured/
+    }
+  );
+});
