@@ -1,50 +1,54 @@
-
 const mongoose = require('mongoose');
 const config = require('./env');
 
-let isConnected = false;
+let cachedPromise = null;
 
 async function connectDB(customUri = null) {
   const uri = customUri || config.mongodbUri;
 
-  if (isConnected && mongoose.connection.readyState === 1) {
+  // 1. If already connected, return existing connection
+  if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
   }
 
-  try {
-    const conn = await mongoose.connect(uri, {
+  // 2. If connection is currently in progress, return the in-flight promise
+  if (mongoose.connection.readyState === 2 && cachedPromise) {
+    return cachedPromise;
+  }
+
+  // 3. Initiate new connection with caching
+  cachedPromise = mongoose
+    .connect(uri, {
       serverSelectionTimeoutMS: 5000,
-      autoIndex: true
+      autoIndex: config.nodeEnv !== 'production'
+    })
+    .then((conn) => {
+      if (config.nodeEnv !== 'test') {
+        console.log(
+          `[DATABASE] Connected to MongoDB: ${conn.connection.host}/${conn.connection.name}`
+        );
+      }
+      return conn;
+    })
+    .catch((error) => {
+      cachedPromise = null;
+      console.error(
+        '[DATABASE ERROR] Failed to connect to MongoDB:',
+        error.message
+      );
+      console.error(
+        'Check your MongoDB Atlas URI, credentials, and network access settings (allow 0.0.0.0/0 on Atlas).'
+      );
+      throw error;
     });
 
-    isConnected = true;
-
-    if (config.nodeEnv !== 'test') {
-      console.log(
-        `[DATABASE] Connected to MongoDB: ${conn.connection.host}/${conn.connection.name}`
-      );
-    }
-
-    return conn;
-  } catch (error) {
-    console.error(
-      '[DATABASE ERROR] Failed to connect to MongoDB:',
-      error.message
-    );
-
-    console.error(
-      'Check your MongoDB Atlas URI, credentials, and network access settings.'
-    );
-
-    isConnected = false;
-    throw error;
-  }
+  return cachedPromise;
 }
 
 async function disconnectDB() {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
-    isConnected = false;
+    cachedPromise = null;
   }
 }
 

@@ -29,6 +29,12 @@ function errorHandler(err, req, res, next) {
     console.error(`[ERROR] ${statusCode} - ${error.message}`);
   }
 
+  // Ensure CORS headers exist on error response so browser can read error details
+  if (req && req.headers && req.headers.origin && !res.getHeader('Access-Control-Allow-Origin')) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+
   res.status(statusCode).json({
     success: false,
     message: error.message || 'Internal Server Error',

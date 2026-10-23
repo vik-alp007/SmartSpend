@@ -1,7 +1,18 @@
 
-const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL || '/api'
-).replace(/\/+$/, '');
+function getApiBaseUrl() {
+  const rawBase = (import.meta.env.VITE_API_BASE_URL || '/api').trim();
+  if (!rawBase || rawBase === '/api') {
+    return '/api';
+  }
+  const cleanBase = rawBase.replace(/\/+$/, '');
+  // Automatically ensure /api is appended if caller supplied origin only
+  if (!cleanBase.endsWith('/api')) {
+    return `${cleanBase}/api`;
+  }
+  return cleanBase;
+}
+
+const API_BASE = getApiBaseUrl();
 
 export async function request(endpoint, options = {}) {
   const normalizedEndpoint = endpoint.startsWith('/')
@@ -37,10 +48,14 @@ export async function request(endpoint, options = {}) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const error = new Error(
-        data.message || `Request failed with status ${response.status}`
-      );
+      let defaultMsg = `Request failed with status ${response.status}`;
+      if (response.status === 404) {
+        defaultMsg = `API endpoint not found (HTTP 404). Check backend deployment and route URL.`;
+      } else if (response.status === 502 || response.status === 503 || response.status === 504) {
+        defaultMsg = `Server temporarily unavailable (HTTP ${response.status}). Please check backend status and database connectivity.`;
+      }
 
+      const error = new Error(data.message || defaultMsg);
       error.status = response.status;
       error.data = data;
       throw error;
@@ -50,7 +65,7 @@ export async function request(endpoint, options = {}) {
   } catch (error) {
     if (!error.status && error.name === 'TypeError') {
       error.message =
-        'Unable to connect to SmartSpend server. Please check your internet connection and backend deployment.';
+        'Unable to connect to SmartSpend server. Please check your internet connection, backend deployment URL, and CORS configuration.';
     }
 
     throw error;

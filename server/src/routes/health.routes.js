@@ -4,17 +4,22 @@ const mongoose = require('mongoose');
 const config = require('../config/env');
 
 router.get('/health', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-  const isHealthy = mongoose.connection.readyState === 1;
+  const isDbConnected = mongoose.connection.readyState === 1;
 
-  res.status(isHealthy ? 200 : 503).json({
-    status: isHealthy ? 'healthy' : 'unhealthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    database: {
-      status: dbStatus
-    },
-    version: '1.0.0'
+  if (isDbConnected) {
+    return res.status(200).json({
+      status: 'ok',
+      database: 'connected',
+      uptime: Math.round(process.uptime()),
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  return res.status(503).json({
+    status: 'degraded',
+    database: 'disconnected',
+    message: 'Backend server is running, but database is disconnected. Verify MONGODB_URI and MongoDB Atlas network access.',
+    timestamp: new Date().toISOString()
   });
 });
 

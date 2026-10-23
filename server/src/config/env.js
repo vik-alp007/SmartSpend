@@ -24,6 +24,12 @@ function validateEnv() {
       process.exit(1);
     }
   }
+
+  if ((process.env.NODE_ENV === 'production' || process.env.VERCEL) && !process.env.MONGODB_URI) {
+    console.warn(
+      '\x1b[33m[CONFIG WARNING] MONGODB_URI is not set in production. Localhost MongoDB will fail on Vercel. Please set MONGODB_URI in Vercel Environment Variables with your MongoDB Atlas connection string.\x1b[0m'
+    );
+  }
 }
 
 // In test environment, provide fallback JWT_SECRET if not supplied

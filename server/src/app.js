@@ -30,22 +30,27 @@ const corsOptions = {
     // Always allow in development
     if (config.nodeEnv === 'development') return callback(null, true);
 
+    const configuredOrigins = config.clientOrigin
+      ? config.clientOrigin.split(',').map((o) => o.trim().replace(/\/+$/, '')).filter(Boolean)
+      : [];
+
     const allowedOrigins = [
-      config.clientOrigin,
+      ...configuredOrigins,
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:5000'
-    ].filter(Boolean);
+    ];
 
+    const normalizedOrigin = origin.replace(/\/+$/, '');
     // Allow any *.vercel.app subdomain (covers all preview + production deployments)
-    const isVercelApp = /^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
+    const isVercelApp = /^https:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/.test(normalizedOrigin);
 
-    if (allowedOrigins.includes(origin) || isVercelApp) {
+    if (allowedOrigins.includes(normalizedOrigin) || isVercelApp) {
       callback(null, true);
     } else {
-      callback(new Error('CORS policy: Not allowed by Access-Control-Allow-Origin'));
+      callback(null, false);
     }
   },
   credentials: true,

@@ -11,6 +11,7 @@
     "build": "npm --prefix client install && npm --prefix client run build && node -e \"const fs = require('fs'); fs.cpSync('client/dist', 'dist', { recursive: true });\"",
     "start": "npm --prefix server start",
     "test": "npm --prefix server test",
+    "test:readiness": "npm --prefix server run test:readiness",
     "test:competition": "npm --prefix server run test:competition",
     "test:fixed": "npm --prefix server run test:fixed",
     "seed": "node scripts/seed-demo-data.js",

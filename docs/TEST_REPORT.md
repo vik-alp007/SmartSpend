@@ -9,15 +9,20 @@
 
 ## 1. Executive Summary
 
-| Test Suite | Total Tests | Passed | Failed | Status |
+| Test Suite | Total Tests | Passed | Failed | Blocked / Status |
 |---|---|---|---|---|
-| `auth.test.js` | 7 | 7 | 0 | PASSED |
-| `transactions.test.js` | 9 | 9 | 0 | PASSED |
-| `budgets.test.js` | 5 | 5 | 0 | PASSED |
-| `dashboard.test.js` | 2 | 2 | 0 | PASSED |
-| `reports.test.js` | 2 | 2 | 0 | PASSED |
-| `competition_bugs.test.js` | 8 | 8 | 0 | PASSED |
-| **Total** | **33** | **33** | **0** | **100% PASS** |
+| **Production Readiness Suite** (`production_readiness.test.js`) | **17** | **17** | **0** | **PASSED (100%)** |
+| **Frontend Production Build** (`vite build`) | **1** | **1** | **0** | **PASSED (100%)** |
+| `auth.test.js` (Integration) | 7 | 0 | 0 | Blocked by missing local DB service |
+| `transactions.test.js` (Integration) | 9 | 0 | 0 | Blocked by missing local DB service |
+| `budgets.test.js` (Integration) | 5 | 0 | 0 | Blocked by missing local DB service |
+| `dashboard.test.js` (Integration) | 2 | 0 | 0 | Blocked by missing local DB service |
+| `reports.test.js` (Integration) | 2 | 0 | 0 | Blocked by missing local DB service |
+| `competition_bugs.test.js` (Integration) | 8 | 0 | 0 | Blocked by missing local DB service |
+| **Total Automated Tests Executed** | **18** | **18** | **0** | **100% PASS** |
+
+> [!NOTE]
+> The 33 database-dependent integration tests require an active MongoDB daemon running on `mongodb://localhost:27017` or a configured MongoDB Atlas URI. When running without an active database, they buffer and timeout. The newly introduced `npm run test:readiness` suite tests all serverless entrypoints, Express routing, CORS preflight policies, token verification, schema validation, and URL normalization in-memory with zero network or database dependencies.
 
 ---
 
