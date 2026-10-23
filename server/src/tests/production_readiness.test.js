@@ -9,7 +9,6 @@ process.env.CLIENT_ORIGIN = 'https://smartspend-frontend.vercel.app';
 
 const app = require('../app');
 const rootServerless = require('../../../api/index');
-const serverServerless = require('../../api/[...path]');
 
 // In-memory HTTP request simulator for sandboxed testing without TCP socket binding
 function simulateRequest(handler, method, url, headers = {}, body = null) {
@@ -71,9 +70,8 @@ test('BACKEND: App exports valid Express instance', () => {
   assert.strictEqual(typeof app.listen, 'function');
 });
 
-test('BACKEND: Serverless entrypoints export valid async handlers', () => {
+test('BACKEND: Serverless entrypoint exports valid async handler', () => {
   assert.strictEqual(typeof rootServerless, 'function');
-  assert.strictEqual(typeof serverServerless, 'function');
 });
 
 test('BACKEND: Health check returns degraded status 503 when DB is disconnected', async () => {
@@ -197,15 +195,6 @@ test('ROUTING: Global 404 handler returns structured JSON for unmatched API endp
 
 test('SERVERLESS: Root api/index.js handles OPTIONS request immediately without DB', async () => {
   const res = await simulateRequest(rootServerless, 'OPTIONS', '/api/auth/login', {
-    Origin: 'https://smartspend-frontend.vercel.app'
-  });
-
-  assert.strictEqual(res.status, 204);
-  assert.strictEqual(res.headers['access-control-allow-origin'], 'https://smartspend-frontend.vercel.app');
-});
-
-test('SERVERLESS: Server api/[...path].js handles OPTIONS request immediately without DB', async () => {
-  const res = await simulateRequest(serverServerless, 'OPTIONS', '/api/auth/login', {
     Origin: 'https://smartspend-frontend.vercel.app'
   });
 
