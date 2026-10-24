@@ -73,6 +73,7 @@ export default function DashboardPage({ onNavigate }) {
       await transactionsApi.delete(deleteTarget._id);
       setDeleteTarget(null);
       triggerDashboardRefresh(false);
+      await fetchDashboardData();
     } catch (err) {
       setError(err.message || 'Failed to delete transaction');
     } finally {

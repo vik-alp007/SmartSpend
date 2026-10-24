@@ -6,7 +6,7 @@ import LoadingState from '../components/LoadingState';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function ReportsPage() {
-  const { user } = useAuth();
+  const { user, dashboardKey } = useAuth();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -31,7 +31,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchReport();
-  }, [month, year]);
+  }, [month, year, dashboardKey]);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',

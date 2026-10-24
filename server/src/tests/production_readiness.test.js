@@ -94,6 +94,16 @@ test('BACKEND: Safe client settings endpoint is accessible without authenticatio
   assert.strictEqual(res.body.data.appName, 'SmartSpend');
 });
 
+test('CACHE CONTROL: API responses include no-store headers to prevent UI stale state', async () => {
+  const res = await simulateRequest(app, 'GET', '/api/config/client-settings');
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.headers['cache-control'], 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  assert.strictEqual(res.headers['pragma'], 'no-cache');
+  assert.strictEqual(res.headers['expires'], '0');
+  assert.strictEqual(res.headers['surrogate-control'], 'no-store');
+});
+
+
 test('CORS: Preflight OPTIONS request returns 204 with proper headers for Vercel origin', async () => {
   const res = await simulateRequest(app, 'OPTIONS', '/api/auth/login', {
     Origin: 'https://smartspend-frontend.vercel.app',

@@ -29,6 +29,8 @@ export async function request(endpoint, options = {}) {
 
   const headers = {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers
   };
@@ -36,7 +38,8 @@ export async function request(endpoint, options = {}) {
   const config = {
     ...options,
     headers,
-    credentials: 'include'
+    credentials: 'include',
+    cache: 'no-store'
   };
 
   if (

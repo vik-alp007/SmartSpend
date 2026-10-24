@@ -5,7 +5,7 @@ import { formatDate } from '../utils/formatters';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function ProfilePage() {
-  const { user, setUser, logout } = useAuth();
+  const { user, setUser, logout, triggerDashboardRefresh } = useAuth();
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('INR');
   const [profileMsg, setProfileMsg] = useState({ text: '', type: '' });
@@ -39,6 +39,7 @@ export default function ProfilePage() {
       const res = await profileApi.update({ name: name.trim(), currency });
       if (res.success && res.data) {
         setUser((prev) => ({ ...prev, ...res.data }));
+        triggerDashboardRefresh(false);
         setProfileMsg({ text: 'Profile preferences updated successfully!', type: 'success' });
       }
     } catch (err) {

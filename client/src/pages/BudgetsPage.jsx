@@ -20,7 +20,7 @@ const DEFAULT_BUDGET_CATEGORIES = [
 ];
 
 export default function BudgetsPage() {
-  const { user } = useAuth();
+  const { user, dashboardKey, triggerDashboardRefresh } = useAuth();
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -58,7 +58,7 @@ export default function BudgetsPage() {
 
   useEffect(() => {
     fetchBudgets();
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, dashboardKey]);
 
   const handleCreateBudget = async (e) => {
     e.preventDefault();
@@ -79,7 +79,8 @@ export default function BudgetsPage() {
       });
       setIsCreateOpen(false);
       setFormData({ category: 'Groceries', monthlyLimit: '' });
-      fetchBudgets();
+      triggerDashboardRefresh(false);
+      await fetchBudgets();
     } catch (err) {
       setError(err.message || 'Failed to create budget');
     } finally {
@@ -102,7 +103,8 @@ export default function BudgetsPage() {
         monthlyLimit: limitNum
       });
       setEditingBudget(null);
-      fetchBudgets();
+      triggerDashboardRefresh(false);
+      await fetchBudgets();
     } catch (err) {
       setError(err.message || 'Failed to update budget limit');
     } finally {
@@ -116,7 +118,8 @@ export default function BudgetsPage() {
       setIsSubmitting(true);
       await budgetsApi.delete(deleteTarget.id || deleteTarget._id);
       setDeleteTarget(null);
-      fetchBudgets();
+      triggerDashboardRefresh(false);
+      await fetchBudgets();
     } catch (err) {
       setError(err.message || 'Failed to delete budget');
     } finally {

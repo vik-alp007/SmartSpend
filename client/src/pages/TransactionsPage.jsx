@@ -26,7 +26,7 @@ const CATEGORIES = [
 ];
 
 export default function TransactionsPage() {
-  const { user, triggerDashboardRefresh } = useAuth();
+  const { user, dashboardKey, triggerDashboardRefresh } = useAuth();
   const [transactions, setTransactions] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, totalPages: 1, totalRecords: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +83,7 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [currentPage, search, type, category, startDate, endDate, sortBy, sortOrder]);
+  }, [currentPage, search, type, category, startDate, endDate, sortBy, sortOrder, dashboardKey]);
 
   const handleClearFilters = () => {
     setSearch('');
@@ -106,7 +106,7 @@ export default function TransactionsPage() {
       triggerDashboardRefresh(false);
     }
     setEditingTransaction(null);
-    fetchTransactions();
+    await fetchTransactions();
   };
 
   const handleDeleteConfirm = async () => {
@@ -116,7 +116,7 @@ export default function TransactionsPage() {
       await transactionsApi.delete(deleteTarget._id);
       setDeleteTarget(null);
       triggerDashboardRefresh(false);
-      fetchTransactions();
+      await fetchTransactions();
     } catch (err) {
       setError(err.message || 'Failed to delete transaction');
     } finally {
