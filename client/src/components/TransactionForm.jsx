@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-const DEFAULT_EXPENSE_CATEGORIES = [
+const ALL_CATEGORIES = [
   'Groceries',
   'Dining Out',
   'Bills',
@@ -11,10 +11,6 @@ const DEFAULT_EXPENSE_CATEGORIES = [
   'Health',
   'Education',
   'Entertainment',
-  'Other'
-];
-
-const DEFAULT_INCOME_CATEGORIES = [
   'Salary',
   'Freelancing',
   'Investments',
@@ -75,8 +71,7 @@ export default function TransactionForm({
   const handleTypeChange = (newType) => {
     setFormData((prev) => ({
       ...prev,
-      type: newType,
-      category: newType === 'income' ? 'Salary' : 'Groceries'
+      type: newType
     }));
   };
 
@@ -119,8 +114,7 @@ export default function TransactionForm({
     }
   };
 
-  const categories =
-    formData.type === 'income' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
+  const categories = ALL_CATEGORIES;
 
   return (
     <div className="modal-overlay" onClick={onClose}>

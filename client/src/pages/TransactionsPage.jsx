@@ -20,6 +20,8 @@ const CATEGORIES = [
   'Salary',
   'Freelancing',
   'Investments',
+  'Refund',
+  'Gift',
   'Other'
 ];
 
