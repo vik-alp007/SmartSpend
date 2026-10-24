@@ -129,20 +129,6 @@ test('CHALLENGE: BUG-BEG-03 - Zero Amount Acceptance behavior', async (t) => {
   }
 });
 
-test('CHALLENGE: BUG-BEG-05 - Profile Name Untrimmed Whitespace behavior', async (t) => {
-  const res = await request(app)
-    .patch('/api/profile')
-    .set('Authorization', `Bearer ${token}`)
-    .send({ name: 'Bug Hunter   ' });
-
-  assert.strictEqual(res.status, 200);
-  if (config.bugChallengeMode) {
-    assert.strictEqual(res.body.data.name, 'Bug Hunter   ', 'In competition mode, trailing whitespace is retained');
-  } else {
-    assert.strictEqual(res.body.data.name, 'Bug Hunter', 'In corrected mode, name is trimmed');
-  }
-});
-
 test('CHALLENGE: BUG-INT-01 - Dashboard Monthly Savings Formula behavior', async (t) => {
   const res = await request(app)
     .get('/api/dashboard/summary')

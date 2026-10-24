@@ -50,19 +50,20 @@ async function getTransactions(req, res, next) {
     if (startDate || endDate) {
       filter.transactionDate = {};
       if (startDate) {
-        filter.transactionDate.$gte = new Date(startDate);
+        const start = new Date(startDate);
+        start.setUTCHours(0, 0, 0, 0);
+        filter.transactionDate.$gte = start;
       }
       if (endDate) {
+        const end = new Date(endDate);
         if (config.bugChallengeMode) {
-          // [BUG-INT-03] End date boundary truncated to midnight 00:00:00, omitting same-day records
-          const d = new Date(endDate);
-          d.setHours(0, 0, 0, 0);
-          filter.transactionDate.$lte = d;
+          // [BUG-INT-03] End date boundary truncated to midnight 00:00:00.000 UTC, omitting same-day records
+          end.setUTCHours(0, 0, 0, 0);
+          filter.transactionDate.$lte = end;
         } else {
-          // Corrected: Inclusive end date until 23:59:59.999
-          const d = new Date(endDate);
-          d.setHours(23, 59, 59, 999);
-          filter.transactionDate.$lte = d;
+          // Corrected: Inclusive end date through 23:59:59.999 UTC
+          end.setUTCHours(23, 59, 59, 999);
+          filter.transactionDate.$lte = end;
         }
       }
     }
@@ -82,6 +83,8 @@ async function getTransactions(req, res, next) {
     } else {
       sortOptions[sortBy] = order;
     }
+    // Deterministic tiebreaker for stable pagination and row display
+    sortOptions._id = -1;
 
     // Pagination count
     let totalCount;
@@ -162,13 +165,25 @@ async function createTransaction(req, res, next) {
       }
     }
 
+    let parsedDate;
+    if (transactionDate) {
+      const d = new Date(transactionDate);
+      if (!isNaN(d.getTime())) {
+        if (typeof transactionDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(transactionDate.trim())) {
+          const now = new Date();
+          d.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+        }
+        parsedDate = d;
+      }
+    }
+
     const transaction = await Transaction.create({
       userId: req.user._id,
       title: title.trim(),
       type,
       amount: Math.round(numAmount * 100) / 100,
       category: category.trim(),
-      transactionDate: transactionDate ? new Date(transactionDate) : new Date(),
+      transactionDate: parsedDate || new Date(),
       paymentMethod: paymentMethod || 'UPI',
       notes: notes ? notes.trim() : ''
     });
@@ -222,7 +237,16 @@ async function updateTransaction(req, res, next) {
     if (title) transaction.title = title.trim();
     if (type && ['income', 'expense'].includes(type)) transaction.type = type;
     if (category) transaction.category = category.trim();
-    if (transactionDate) transaction.transactionDate = new Date(transactionDate);
+    if (transactionDate) {
+      const d = new Date(transactionDate);
+      if (!isNaN(d.getTime())) {
+        if (typeof transactionDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(transactionDate.trim())) {
+          const now = new Date();
+          d.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+        }
+        transaction.transactionDate = d;
+      }
+    }
     if (paymentMethod) transaction.paymentMethod = paymentMethod;
     if (notes !== undefined) transaction.notes = notes.trim();
 

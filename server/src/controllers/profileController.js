@@ -41,13 +41,8 @@ async function updateProfile(req, res, next) {
         });
       }
 
-      if (config.bugChallengeMode) {
-        // [BUG-BEG-05] Untrimmed whitespace saved in competition mode
-        user.name = name;
-      } else {
-        // Corrected: Name is trimmed before saving
-        user.name = name.trim();
-      }
+      // Profile name is always trimmed cleanly
+      user.name = name.trim();
     }
 
     if (currency && ['INR', 'USD', 'EUR', 'GBP'].includes(currency)) {

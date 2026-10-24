@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 export default function BudgetCard({ budget, onEdit, onDelete, currency = 'INR' }) {
   const { clientConfig } = useAuth();
   const { category, monthlyLimit, spent, remaining, utilizationPercentage, isOverBudget } = budget;
+  const activeLimit = clientConfig.bugChallengeMode && budget.effectiveLimit !== undefined ? budget.effectiveLimit : monthlyLimit;
 
   // Calculate visual progress bar width
   let progressWidth = utilizationPercentage;
@@ -14,7 +15,7 @@ export default function BudgetCard({ budget, onEdit, onDelete, currency = 'INR' 
     statusClass = 'danger';
     if (clientConfig.bugChallengeMode) {
       // [BUG-INT-02] When over budget, calculates width based on surplus instead of clamping at 100%
-      progressWidth = Math.max(5, ((spent - monthlyLimit) / monthlyLimit) * 100);
+      progressWidth = Math.max(5, ((spent - activeLimit) / activeLimit) * 100);
       progressWidth = Math.min(progressWidth, 100);
     } else {
       // Corrected: Clamp to 100% full width
@@ -36,7 +37,7 @@ export default function BudgetCard({ budget, onEdit, onDelete, currency = 'INR' 
             {isOverBudget && <span className="badge badge-danger">Exceeded</span>}
           </h3>
           <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
-            Monthly Limit: {formatCurrency(monthlyLimit, currency)}
+            Monthly Limit: {formatCurrency(activeLimit, currency)}
           </div>
         </div>
 

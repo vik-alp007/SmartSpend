@@ -72,7 +72,7 @@ async function getSummary(req, res, next) {
 
     // 3. Recent 5 transactions
     const recentTransactions = await Transaction.find({ userId })
-      .sort({ transactionDate: -1, createdAt: -1 })
+      .sort({ transactionDate: -1, _id: -1 })
       .limit(5);
 
     // 4. Budget summary for current month

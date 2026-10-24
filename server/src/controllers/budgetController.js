@@ -71,7 +71,7 @@ async function getBudgets(req, res, next) {
         return {
           id: budget._id,
           category: budget.category,
-          monthlyLimit: budget.monthlyLimit,
+          monthlyLimit: config.bugChallengeMode ? limit : budget.monthlyLimit,
           effectiveLimit: limit,
           month: budget.month,
           year: budget.year,

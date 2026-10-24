@@ -8,15 +8,17 @@ async function getMonthlyReport(req, res, next) {
     const year = parseInt(req.query.year, 10) || now.getFullYear();
     const month = parseInt(req.query.month, 10) || now.getMonth() + 1; // 1-12
 
-    const startDate = new Date(year, month - 1, 1);
+    const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
     let endDate;
 
     if (config.bugChallengeMode) {
       // [BUG-ADV-01] Hardcoded 30-day month end in competition mode, cutting off the 31st day
-      endDate = new Date(year, month - 1, 30, 23, 59, 59, 999);
+      const maxDay = Math.min(30, new Date(Date.UTC(year, month, 0)).getUTCDate());
+      endDate = new Date(Date.UTC(year, month - 1, maxDay, 23, 59, 59, 999));
     } else {
       // Corrected: Accurate calendar month end
-      endDate = new Date(year, month, 0, 23, 59, 59, 999);
+      const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+      endDate = new Date(Date.UTC(year, month - 1, lastDay, 23, 59, 59, 999));
     }
 
     // Totals for the specified month
@@ -121,7 +123,7 @@ async function getMonthlyReport(req, res, next) {
     ]);
 
     const dailyTrends = [];
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
 
     for (let d = 1; d <= daysInMonth; d++) {
       const incItem = dailyAgg.find((item) => item._id.day === d && item._id.type === 'income');

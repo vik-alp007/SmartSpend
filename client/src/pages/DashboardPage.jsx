@@ -10,7 +10,7 @@ import LoadingState from '../components/LoadingState';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function DashboardPage({ onNavigate }) {
-  const { user, dashboardKey, triggerDashboardRefresh } = useAuth();
+  const { user, dashboardKey, triggerDashboardRefresh, clientConfig } = useAuth();
   const [summary, setSummary] = useState(null);
   const [charts, setCharts] = useState(null);
   const [budgets, setBudgets] = useState([]);
@@ -53,11 +53,15 @@ export default function DashboardPage({ onNavigate }) {
   const handleCreateOrUpdate = async (formData) => {
     if (editingTransaction) {
       await transactionsApi.update(editingTransaction._id, formData);
-      // Notice: triggerDashboardRefresh(true) tells AuthContext it's from an edit
+      // [BUG-INT-05] If competition mode is on, triggerDashboardRefresh(true) suppresses dashboard refresh
       triggerDashboardRefresh(true);
+      if (!clientConfig?.bugChallengeMode) {
+        await fetchDashboardData();
+      }
     } else {
       await transactionsApi.create(formData);
       triggerDashboardRefresh(false);
+      await fetchDashboardData();
     }
     setEditingTransaction(null);
   };
@@ -227,22 +231,36 @@ export default function DashboardPage({ onNavigate }) {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {budgets.slice(0, 4).map((b) => (
-                <div key={b.id || b._id} style={{ fontSize: '0.875rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 600 }}>{b.category}</span>
-                    <span>
-                      ₹{b.spent.toLocaleString()} / ₹{b.monthlyLimit.toLocaleString()}
-                    </span>
+              {budgets.slice(0, 4).map((b) => {
+                const bLimit = clientConfig?.bugChallengeMode && b.effectiveLimit !== undefined ? b.effectiveLimit : b.monthlyLimit;
+                let bProgressWidth = b.utilizationPercentage;
+                if (b.isOverBudget) {
+                  if (clientConfig?.bugChallengeMode) {
+                    bProgressWidth = Math.min(100, Math.max(5, ((b.spent - bLimit) / bLimit) * 100));
+                  } else {
+                    bProgressWidth = 100;
+                  }
+                } else {
+                  bProgressWidth = Math.min(100, b.utilizationPercentage);
+                }
+
+                return (
+                  <div key={b.id || b._id} style={{ fontSize: '0.875rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 600 }}>{b.category}</span>
+                      <span>
+                        ₹{b.spent.toLocaleString()} / ₹{bLimit.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="progress-track">
+                      <div
+                        className={`progress-fill ${b.isOverBudget ? 'danger' : b.utilizationPercentage > 85 ? 'warning' : 'safe'}`}
+                        style={{ width: `${bProgressWidth}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="progress-track">
-                    <div
-                      className={`progress-fill ${b.isOverBudget ? 'danger' : b.utilizationPercentage > 85 ? 'warning' : 'safe'}`}
-                      style={{ width: `${Math.min(100, b.utilizationPercentage)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

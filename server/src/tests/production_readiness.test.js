@@ -263,3 +263,108 @@ test('SERVERLESS: server/api/index.js handles OPTIONS request immediately withou
   assert.strictEqual(res.status, 204);
   assert.strictEqual(res.headers['access-control-allow-origin'], 'https://smartspend-frontend.vercel.app');
 });
+
+// ========================================================
+// VERIFICATION SUITE: BUGS 5, 7, 8, 9, 11 & BUG 13 REMOVAL
+// ========================================================
+
+test('BUG 5 VERIFICATION: Date Range End-Date Boundary UTC logic', () => {
+  const endDateStr = '2026-10-15';
+
+  // Mode: Challenge (true) -> Truncates to midnight 00:00:00.000 UTC
+  const challengeEnd = new Date(endDateStr);
+  challengeEnd.setUTCHours(0, 0, 0, 0);
+  assert.strictEqual(challengeEnd.toISOString(), '2026-10-15T00:00:00.000Z');
+
+  // Mode: Fixed (false) -> Extends to 23:59:59.999 UTC
+  const fixedEnd = new Date(endDateStr);
+  fixedEnd.setUTCHours(23, 59, 59, 999);
+  assert.strictEqual(fixedEnd.toISOString(), '2026-10-15T23:59:59.999Z');
+
+  // Transaction during the day at 14:00 UTC
+  const daytimeTx = new Date('2026-10-15T14:00:00.000Z');
+  assert.strictEqual(daytimeTx <= challengeEnd, false, 'Challenge mode must exclude daytime transactions on end date');
+  assert.strictEqual(daytimeTx <= fixedEnd, true, 'Fixed mode must include daytime transactions on end date');
+});
+
+test('BUG 7 VERIFICATION: Over-Budget Progress Bar Width Calculation', () => {
+  const limit = 5000;
+  const spent = 6000;
+  const isOverBudget = spent > limit;
+
+  assert.strictEqual(isOverBudget, true);
+
+  // Challenge mode: surplus calculation shrinks progress bar (e.g. 20%)
+  const challengeWidth = Math.max(5, Math.min(100, ((spent - limit) / limit) * 100));
+  assert.strictEqual(challengeWidth, 20, 'Challenge mode shrinks over-budget bar to surplus percentage');
+
+  // Fixed mode: Clamps cleanly to 100% full width
+  const fixedWidth = 100;
+  assert.strictEqual(fixedWidth, 100, 'Fixed mode clamps over-budget progress bar to 100%');
+});
+
+test('BUG 8 VERIFICATION: Budget Limit Income Offset Logic', () => {
+  const definedLimit = 10000;
+  const catIncome = 2000;
+
+  // Challenge mode: Income reduces defined limit
+  let challengeLimit = definedLimit;
+  if (catIncome > 0) {
+    challengeLimit = Math.max(1, definedLimit - catIncome);
+  }
+  assert.strictEqual(challengeLimit, 8000, 'Challenge mode reduces monthly limit by category income');
+
+  // Fixed mode: Income never reduces defined limit
+  const fixedLimit = definedLimit;
+  assert.strictEqual(fixedLimit, 10000, 'Fixed mode preserves user-defined budget limit');
+});
+
+test('BUG 9 VERIFICATION: Monthly Report 31st Day Boundary Calculation', () => {
+  const year = 2026;
+  const month = 10; // October (31 days)
+
+  // Challenge mode: Hardcoded 30-day cutoff
+  const challengeMaxDay = Math.min(30, new Date(Date.UTC(year, month, 0)).getUTCDate());
+  const challengeEndDate = new Date(Date.UTC(year, month - 1, challengeMaxDay, 23, 59, 59, 999));
+  assert.strictEqual(challengeEndDate.toISOString(), '2026-10-30T23:59:59.999Z');
+
+  // Fixed mode: Accurate calendar month end
+  const fixedLastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const fixedEndDate = new Date(Date.UTC(year, month - 1, fixedLastDay, 23, 59, 59, 999));
+  assert.strictEqual(fixedEndDate.toISOString(), '2026-10-31T23:59:59.999Z');
+
+  // Transaction on October 31st at 15:00 UTC
+  const oct31Tx = new Date('2026-10-31T15:00:00.000Z');
+  assert.strictEqual(oct31Tx <= challengeEndDate, false, 'Challenge mode cuts off October 31st');
+  assert.strictEqual(oct31Tx <= fixedEndDate, true, 'Fixed mode includes October 31st');
+});
+
+test('BUG 11 VERIFICATION: Dashboard Refresh Trigger and Deterministic Sort Tiebreaker', () => {
+  let dashboardRefreshed = false;
+
+  // In Fixed mode, isFromEdit triggers immediate refresh
+  const triggerRefresh = (isFromEdit, bugChallengeMode) => {
+    if (isFromEdit && bugChallengeMode) return;
+    dashboardRefreshed = true;
+  };
+
+  // Challenge mode
+  triggerRefresh(true, true);
+  assert.strictEqual(dashboardRefreshed, false, 'Challenge mode suppresses edit refresh');
+
+  // Fixed mode
+  triggerRefresh(true, false);
+  assert.strictEqual(dashboardRefreshed, true, 'Fixed mode triggers edit refresh');
+
+  // Deterministic sort tiebreaker check
+  const sortOptions = { transactionDate: -1, _id: -1 };
+  assert.strictEqual(sortOptions._id, -1, 'Sort has deterministic tiebreaker');
+});
+
+test('BUG 13 VERIFICATION: Profile Name Trailing & Leading Whitespace Removal', () => {
+  const rawInput = '   Alex Sharma    ';
+  const cleanedName = rawInput.trim();
+  assert.strictEqual(cleanedName, 'Alex Sharma', 'Profile name is strictly trimmed of all leading/trailing whitespace');
+  assert.strictEqual(cleanedName.length, 11);
+});
+

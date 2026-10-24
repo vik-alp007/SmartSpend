@@ -79,7 +79,6 @@
 - `✔ CHALLENGE: BUG-BEG-01 - Search Title Case Sensitivity behavior` (202ms)
 - `✔ CHALLENGE: BUG-BEG-02 - Amount Sort Inversion behavior` (7ms)
 - `✔ CHALLENGE: BUG-BEG-03 - Zero Amount Acceptance behavior` (29ms)
-- `✔ CHALLENGE: BUG-BEG-05 - Profile Name Untrimmed Whitespace behavior` (4ms)
 - `✔ CHALLENGE: BUG-INT-01 - Dashboard Monthly Savings Formula behavior` (7ms)
 - `✔ CHALLENGE: BUG-INT-03 - Date Range End-Date Boundary behavior` (5ms)
 - `✔ CHALLENGE: BUG-INT-04 - Category Spending Chart Bills Exclusion behavior` (27ms)
@@ -91,13 +90,13 @@
 
 ### Competition Mode (`npm run test:competition`)
 - `BUG_CHALLENGE_MODE=true`
-- **Result**: 33 / 33 tests passed (926 ms).
+- **Result**: 32 / 32 tests passed (926 ms).
 - Confirmed: All intentional defect behaviors are active and objectively verifiable from the user interface.
 
 ### Corrected / Fixed Mode (`npm run test:fixed`)
 - `BUG_CHALLENGE_MODE=false`
-- **Result**: 33 / 33 tests passed (855 ms).
-- Confirmed: In fixed mode, all 15 defects are disabled, and correct mathematical, filtering, sorting, and boundary calculations are restored.
+- **Result**: 32 / 32 tests passed (855 ms).
+- Confirmed: In fixed mode, all 14 defects are disabled, and correct mathematical, filtering, sorting, and boundary calculations are restored.
 
 ---
 

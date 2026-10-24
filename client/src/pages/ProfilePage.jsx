@@ -36,7 +36,7 @@ export default function ProfilePage() {
 
     try {
       setIsUpdatingProfile(true);
-      const res = await profileApi.update({ name, currency });
+      const res = await profileApi.update({ name: name.trim(), currency });
       if (res.success && res.data) {
         setUser((prev) => ({ ...prev, ...res.data }));
         setProfileMsg({ text: 'Profile preferences updated successfully!', type: 'success' });

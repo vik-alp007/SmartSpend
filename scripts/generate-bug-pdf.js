@@ -87,27 +87,6 @@ const BUGS_DATA = [
     verification: 'Type non-existent search and observe "No matching transactions found" message.'
   },
   {
-    id: 'BUG-BEG-05',
-    title: 'Profile Display Name Untrimmed Whitespace',
-    difficulty: 'Beginner',
-    severity: 'Low',
-    component: 'Settings & Profile (ProfileController.updateProfile)',
-    reproduction: [
-      '1. Navigate to Settings & Profile page.',
-      '2. In Full Name, input "Alex Sharma   " (3 trailing spaces).',
-      '3. Click "Save Profile Changes".',
-      '4. Return to Dashboard: Greeting displays "Welcome back, Alex Sharma   !".'
-    ],
-    expected: 'Names should be trimmed before saving to ensure clean presentation.',
-    actual: 'Saves raw untrimmed string with trailing whitespace.',
-    uiRecognition: 'Trailing spaces visible before exclamation marks in dashboard greetings.',
-    rootCause: 'Missing .trim() on name in profileController.js.',
-    remediation: 'Use user.name = name.trim(); before saving.',
-    corrected: 'Trailing and leading spaces are automatically trimmed.',
-    testRef: 'server/src/tests/competition_bugs.test.js -> BUG-BEG-05',
-    verification: 'Update profile with trailing spaces and verify greeting displays cleanly.'
-  },
-  {
     id: 'BUG-INT-01',
     title: 'Monthly Savings Sums Expenses Instead of Subtracting',
     difficulty: 'Intermediate',
